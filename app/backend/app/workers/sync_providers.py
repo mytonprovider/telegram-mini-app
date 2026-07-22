@@ -116,6 +116,7 @@ async def _snapshot_history(session: AsyncSession) -> None:
         row = model.to_dict()
         del row["updated_at"]
         del row["balance_at"]
+        del row["last_online_at"]
         row["archived_at"] = archived_at
         rows.append(row)
     if rows:
