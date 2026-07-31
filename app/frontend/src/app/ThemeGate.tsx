@@ -1,7 +1,7 @@
 import { useAppliedTheme } from "@/hooks/useTheme";
 import { isInTelegram } from "@/lib/telegram";
 import { miniApp } from "@tma.js/sdk-react";
-import { type ReactNode, useLayoutEffect } from "react";
+import { type ReactNode, useLayoutEffect, useRef } from "react";
 
 function paintTelegramBands(): void {
   if (!isInTelegram()) return;
@@ -16,10 +16,17 @@ function paintTelegramBands(): void {
 
 export function ThemeGate({ children }: { children: ReactNode }) {
   const theme = useAppliedTheme();
+  const painted = useRef(false);
 
   useLayoutEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    paintTelegramBands();
+    const apply = () => {
+      document.documentElement.dataset.theme = theme;
+      paintTelegramBands();
+    };
+    const start = document.startViewTransition?.bind(document);
+    if (painted.current && start) start(apply);
+    else apply();
+    painted.current = true;
   }, [theme]);
 
   return <>{children}</>;

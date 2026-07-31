@@ -5,7 +5,7 @@ import { Filters } from "@/screens/Filters/Filters";
 import { Home } from "@/screens/Home/Home";
 import { ProviderBags } from "@/screens/ProviderBags/ProviderBags";
 import { ProviderDetail } from "@/screens/ProviderDetail/ProviderDetail";
-import { Settings } from "@/screens/Settings/Settings";
+import { useUi } from "@/stores/ui";
 import { useEffect, useLayoutEffect } from "react";
 import { Navigate, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
 
@@ -24,7 +24,14 @@ export function AppRoutes() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => bindSettingsButton(() => navigate("/settings")), [navigate]);
+  useEffect(
+    () =>
+      bindSettingsButton(() => {
+        navigate("/");
+        useUi.getState().setMenuOpen(true);
+      }),
+    [navigate],
+  );
 
   useEffect(() => {
     if (startParamHandled) return;
@@ -60,7 +67,6 @@ export function AppRoutes() {
       <Route path="/bags" element={<BagExplorer />} />
       <Route path="/filters" element={<Filters />} />
       <Route path="/alerts" element={<Alerts />} />
-      <Route path="/settings" element={<Settings />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

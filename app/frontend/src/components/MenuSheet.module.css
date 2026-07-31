@@ -1,0 +1,108 @@
+.accountSlot {
+  display: flex;
+  align-items: center;
+  min-height: 64px;
+}
+
+.account {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  background: var(--ts-card2);
+  border-radius: var(--ts-radius-group);
+}
+
+.avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--ts-seg);
+  object-fit: cover;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ts-text);
+}
+
+.accountInfo {
+  min-width: 0;
+}
+
+.accountName {
+  font-size: 15px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.accountUser {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--ts-hint);
+}
+
+.login {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+}
+
+.separator {
+  height: var(--ts-hairline);
+  margin: 16px -16px 0;
+  background: var(--ts-sep);
+}
+
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  margin: 22px 0 14px;
+  padding: 13px 14px;
+  border: none;
+  border-radius: var(--ts-radius-group);
+  background: var(--ts-card2);
+  color: var(--ts-text);
+  font-family: inherit;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rowLabel {
+  flex: 1;
+}
+
+.chevron {
+  display: flex;
+  transform: rotate(-90deg);
+}
+
+.label {
+  margin: 20px 0 8px;
+  font-size: 13.5px;
+  color: var(--ts-hint);
+}
+
+.logout {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-left: auto;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}

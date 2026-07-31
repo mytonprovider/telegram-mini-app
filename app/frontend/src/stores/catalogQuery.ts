@@ -28,7 +28,7 @@ const EMPTY_FILTERS: CatalogFilters = {
   stableOnly: false,
 };
 
-export const PAGE_SIZE = 8;
+export const PAGE_SIZE = 10;
 
 interface CatalogQueryState {
   tab: Tab;

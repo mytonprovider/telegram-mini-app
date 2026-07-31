@@ -48,7 +48,8 @@
 
 .mono {
   font-family: var(--ts-font-mono);
-  font-size: 13px;
+  font-size: 14px;
+  letter-spacing: 0.2px;
   color: var(--ts-text);
 }
 
@@ -108,7 +109,7 @@
 .pk {
   min-width: 0;
   font-family: var(--ts-font-mono);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.2px;
   color: var(--ts-text);

@@ -1,7 +1,7 @@
 import { tick } from "@/lib/telegram";
 import { Icon } from "@/components/Icon/Icon";
 import type { GlyphName } from "@/components/Icon/glyphs";
-import { ACCENT, tint } from "@/lib/colors";
+import { ACCENT } from "@/lib/colors";
 import type { MouseEvent } from "react";
 import styles from "./RoundToggle.module.css";
 
@@ -19,7 +19,6 @@ export function RoundToggle({ glyph, active, ariaLabel, onClick, size = 18 }: Ro
       type="button"
       aria-label={ariaLabel}
       className={styles.button}
-      style={{ background: active ? tint(ACCENT, 0.14) : "var(--ts-seg)" }}
       onClick={(event) => {
         tick();
         onClick(event);

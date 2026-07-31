@@ -1,8 +1,8 @@
 import { BottomNav } from "@/components/BottomNav";
-import { Card } from "@/components/Card";
 import { EmptyState } from "@/components/EmptyState";
 import { Icon } from "@/components/Icon/Icon";
 import { LoadMore } from "@/components/LoadMore";
+import { MenuSheet } from "@/components/MenuSheet";
 import { ProviderRow } from "@/components/ProviderRow";
 import { RoundToggle } from "@/components/RoundToggle";
 import { TelegramLoginButton } from "@/components/TelegramLoginButton";
@@ -17,15 +17,18 @@ import { PAGE_SIZE, useCatalogQuery } from "@/stores/catalogQuery";
 import { hydrateFromServer, setAlertsEnabled, toggleBell, toggleFavorite } from "@/data/sync";
 import { useFavorites } from "@/stores/favorites";
 import { useSubscriptions } from "@/stores/subscriptions";
-import { type ReactNode, type UIEvent, useEffect, useMemo, useRef, useState } from "react";
+import { useUi } from "@/stores/ui";
+import { type UIEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Home.module.css";
 import { TonLogo } from "./TonLogo";
 
 const RELOAD_SPIN_MS = 1100;
 const SCROLL_TOP_THRESHOLD = 360;
+const FOOTER_SAFE_ZONE = 120;
 const SKELETON_MIN = 3;
 const LIST_SKELETON_MIN = 6;
+const CELL_COUNT = 6;
 
 export function Home() {
   const t = useT();
@@ -57,6 +60,8 @@ export function Home() {
 
 
   const alertEnabled = useAlerts((s) => s.enabled);
+  const menuOpen = useUi((s) => s.menuOpen);
+  const setMenuOpen = useUi((s) => s.setMenuOpen);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const reloadTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -102,7 +107,9 @@ export function Home() {
   };
 
   const onScroll = (event: UIEvent<HTMLDivElement>) => {
-    setShowTop(event.currentTarget.scrollTop > SCROLL_TOP_THRESHOLD);
+    const { scrollTop, clientHeight, scrollHeight } = event.currentTarget;
+    const atBottom = scrollTop + clientHeight > scrollHeight - FOOTER_SAFE_ZONE;
+    setShowTop(scrollTop > SCROLL_TOP_THRESHOLD && !atBottom);
   };
 
   const scrollToTop = () => {
@@ -115,7 +122,9 @@ export function Home() {
 
   const showToolbar = tab === "list" && providers.length > 0;
   const showCount = isSubsTab ? loggedIn && subProviders.length > 0 : items.length > 0;
-  const homeCount = t.showing(isSubsTab ? subProviders.length : items.length);
+  const homeCount = isSubsTab
+    ? t.showing(subProviders.length, subProviders.length)
+    : t.showing(shown.length, items.length);
 
   const showSubsRows = !showSkeleton && isSubsTab && loggedIn && subProviders.length > 0;
   const showSubsToolbar = showSubsRows;
@@ -127,18 +136,19 @@ export function Home() {
 
   return (
     <div className={styles.screen}>
-      {!isInTelegram() && (
-        <header className={styles.header}>
-          <div className={styles.headerTitle}>{t.appName}</div>
-          <div className={styles.headerActions}>
-            <button type="button" aria-label="Refresh" className={styles.headerBtn} onClick={onReload}>
-              <span className={spinning ? styles.spin : undefined}>
-                <Icon glyph="reload" size={18} color="var(--ts-hint)" />
-              </span>
-            </button>
-          </div>
-        </header>
-      )}
+      <header className={styles.header}>
+        {!isInTelegram() && <div className={styles.headerTitle}>{t.appName}</div>}
+        <div className={styles.headerActions}>
+          <button type="button" aria-label="Refresh" className={styles.headerBtn} onClick={onReload}>
+            <span className={spinning ? styles.spin : undefined}>
+              <Icon glyph="reload" size={18} color="var(--ts-hint)" />
+            </span>
+          </button>
+          <button type="button" aria-label={t.settings} className={styles.headerBtn} onClick={() => setMenuOpen(true)}>
+            <Icon glyph="menu" size={20} color="var(--ts-hint)" />
+          </button>
+        </div>
+      </header>
 
       <div className={styles.scroll} ref={scrollRef} onScroll={onScroll}>
         <div className={styles.hero}>
@@ -264,16 +274,20 @@ export function Home() {
           <div className={styles.list}>
             {Array.from({ length: skeletonCount }, (_, index) => (
               <div key={index} className={styles.skeleton}>
-                <div className={styles.skeletonMain}>
-                  <div className={styles.barTitle} />
-                  <div className={styles.barSub} />
-                  <div className={styles.barMeta} />
+                <div className={styles.skHead}>
+                  <span className={styles.skToggle} />
+                  <span className={styles.skKey} />
+                  <span className={styles.skSpacer} />
+                  <span className={styles.skStatus} />
                 </div>
-                <div className={styles.skeletonSide}>
-                  <div className={styles.skeletonDot} />
-                  <div className={styles.barSide} />
+                <div className={styles.skCells}>
+                  {Array.from({ length: CELL_COUNT }, (_, cell) => (
+                    <span key={cell} className={styles.skCell}>
+                      <span className={styles.skLabel} />
+                      <span className={styles.skValue} />
+                    </span>
+                  ))}
                 </div>
-                <div className={styles.skeletonToggle} />
               </div>
             ))}
           </div>
@@ -306,7 +320,7 @@ export function Home() {
         {showEmpty && (
           <EmptyState
             glyph={favTab ? "star" : "search"}
-            iconColor={favTab ? "var(--ts-accent)" : "var(--ts-star)"}
+            iconColor="var(--ts-star)"
             title={favTab ? t.favEmptyTitle : t.providersNotFound}
             desc={favTab ? t.favEmptyDesc : undefined}
           />
@@ -315,36 +329,30 @@ export function Home() {
         {!showSkeleton && !isSubsTab && items.length > visible && <LoadMore onClick={loadMore} />}
 
         <div className={styles.footer}>
-          <Card>
-            <FooterLink
-              onClick={() => navigate("/bags")}
-              icon={<Icon glyph="box" size={16} color="#fff" />}
-              iconClass={styles.footerIconBag}
-              label={t.explorerTitle}
-            />
-            <FooterLink
+          <div className={styles.footerLinks}>
+            <a
+              className={styles.footerLink}
               href="https://github.com/igroman787/mytonprovider"
-              icon={<Icon glyph="plus" size={16} color="#fff" />}
-              iconClass={styles.footerIconAdd}
-              label={t.becomeProvider}
-            />
-            <FooterLink
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <TonLogo size={17} disc="var(--ts-hint)" mark="var(--ts-bg)" />
+              {t.becomeProvider}
+            </a>
+            <a
+              className={styles.footerLink}
               href="https://t.me/mytonprovider_chat"
-              icon={<Icon glyph="chat" size={16} color="#fff" />}
-              iconClass={styles.footerIconChat}
-              label={t.support}
-            />
-            <FooterLink
-              onClick={() => navigate("/settings")}
-              icon={<Icon glyph="gear" size={16} color="#fff" />}
-              iconClass={styles.footerIconSettings}
-              label={t.settings}
-            />
-          </Card>
-          <div className={styles.footerNote}>
-            {t.footerNote}{" "}
-            <a href="https://mytonprovider.org" target="_blank" rel="noopener noreferrer">
-              mytonprovider.org
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg className={styles.footerMark} viewBox="0 0 240 240" width={17} height={17}>
+                <circle cx="120" cy="120" r="120" fill="var(--ts-hint)" />
+                <path
+                  fill="var(--ts-bg)"
+                  d="M53.2 118.8c34.9-15.2 58.2-25.2 69.8-30.1 33.2-13.8 40.1-16.2 44.6-16.3 1 0 3.2.2 4.7 1.4 1.2 1 1.5 2.3 1.7 3.3.2 1 .4 3.1.2 4.8-1.8 19.3-9.7 66.1-13.7 87.7-1.7 9.1-5 12.2-8.2 12.5-7 .6-12.3-4.6-19-9-10.5-6.9-16.5-11.2-26.7-17.9-11.8-7.8-4.2-12.1 2.6-19.1 1.8-1.8 32.5-29.8 33.1-32.3.1-.3.1-1.5-.6-2.1-.7-.6-1.7-.4-2.4-.2-1 .2-17.1 10.9-48.2 32-4.6 3.1-8.7 4.7-12.4 4.6-4.1-.1-11.9-2.3-17.8-4.2-7.2-2.3-12.9-3.5-12.4-7.4.3-2 3.1-4.1 8.7-6.7z"
+                />
+              </svg>
+              {t.support}
             </a>
           </div>
         </div>
@@ -362,43 +370,8 @@ export function Home() {
       </button>
 
       <BottomNav />
-    </div>
-  );
-}
 
-function FooterLink({
-  href,
-  onClick,
-  icon,
-  iconClass,
-  label,
-}: {
-  href?: string;
-  onClick?: () => void;
-  icon: ReactNode;
-  iconClass: string;
-  label: string;
-}) {
-  const body = (
-    <>
-      <span className={cx(styles.footerIcon, iconClass)}>{icon}</span>
-      <span className={styles.footerLinkLabel}>{label}</span>
-      {onClick ? (
-        <span className={styles.footerChev}>
-          <Icon glyph="chevronDown" size={16} color="var(--ts-hint)" />
-        </span>
-      ) : (
-        <Icon glyph="arrowUpRight" size={15} color="var(--ts-hint)" />
-      )}
-    </>
-  );
-  return onClick ? (
-    <button type="button" className={styles.footerLink} onClick={onClick}>
-      {body}
-    </button>
-  ) : (
-    <a className={styles.footerLink} href={href} target="_blank" rel="noopener noreferrer">
-      {body}
-    </a>
+      {menuOpen && <MenuSheet onClose={() => setMenuOpen(false)} />}
+    </div>
   );
 }
