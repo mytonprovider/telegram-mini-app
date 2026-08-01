@@ -25,8 +25,12 @@ export function diskSpeedToNum(text: string | null): number | null {
 }
 const ELLIPSIS = "…";
 
+export function trim(value: number, digits: number): string {
+  return String(parseFloat(value.toFixed(digits)));
+}
+
 export function amount(value: number): string {
-  return String(parseFloat(value.toFixed(2)));
+  return trim(value, 2);
 }
 
 export function formatPrice(nanoTon: number): string {

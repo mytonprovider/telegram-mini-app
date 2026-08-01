@@ -54,8 +54,8 @@ function providerFields(p: Provider, t: Dict): Field[] {
         ]
       : []),
     { label: t.location, value: placeOf(p, t) },
-    { label: t.uptime, value: `${p.uptime.toFixed(2)} %` },
-    { label: t.rating, value: p.rating.toFixed(2) },
+    { label: t.uptime, value: `${amount(p.uptime)} %` },
+    { label: t.rating, value: amount(p.rating) },
     { label: t.price, value: formatPriceGram(p.price) },
   ];
 }
@@ -238,8 +238,8 @@ export function ProviderDetail() {
         </div>
 
         <div className={styles.tiles}>
-          <MetricTile value={provider.rating.toFixed(2)} label={t.rating} valueColor="var(--ts-accent)" />
-          <MetricTile value={provider.uptime.toFixed(2)} unit="%" label={t.uptime} valueColor={SC[uptimeTone(provider.uptime)]} />
+          <MetricTile value={amount(provider.rating)} label={t.rating} valueColor="var(--ts-accent)" />
+          <MetricTile value={amount(provider.uptime)} unit="%" label={t.uptime} valueColor={SC[uptimeTone(provider.uptime)]} />
           <MetricTile value={formatPrice(provider.price)} unit="GRAM" label={t.priceUnit} />
         </div>
 

@@ -3,7 +3,7 @@ import { StatusDot } from "@/components/StatusDot";
 import type { Provider } from "@/data/types";
 import { useT } from "@/i18n";
 import type { Dict } from "@/i18n/types";
-import { EMPTY, amount, formatPrice, formatTime, shorten } from "@/lib/format";
+import { EMPTY, amount, formatPrice, formatTime, shorten, trim } from "@/lib/format";
 import { describeStatus } from "@/lib/status";
 import type { ReactNode } from "react";
 import styles from "./ProviderRow.module.css";
@@ -55,13 +55,13 @@ export function ProviderRow({ provider, onOpen, trailing }: ProviderRowProps) {
         <span className={styles.spacer} />
         <span className={styles.status} style={{ color: status.color }}>
           {status.label}
-          {hasChecks && ` ${(status.ratio * 100).toFixed(1)}%`}
+          {hasChecks && ` ${trim(status.ratio * 100, 1)}%`}
         </span>
         <StatusDot color={status.color} size={8} />
       </div>
       <div className={styles.cells}>
-        {cell(t.rating, provider.rating.toFixed(2))}
-        {cell(t.uptime, `${provider.uptime.toFixed(2)}%`)}
+        {cell(t.rating, amount(provider.rating))}
+        {cell(t.uptime, `${amount(provider.uptime)}%`)}
         {cell(t.price, withUnits(`${formatPrice(provider.price)} GRAM`))}
         {cell(t.freeLabel, withUnits(freeSpace(provider, t)))}
         {cell(t.workingTime, withUnits(working))}
