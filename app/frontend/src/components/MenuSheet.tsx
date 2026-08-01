@@ -107,10 +107,7 @@ export function MenuSheet({ onClose }: { onClose: () => void }) {
               navigate("/bags");
             }}
           >
-            <span className={styles.rowLabel}>{t.explorerTitle}</span>
-            <span className={styles.chevron}>
-              <Icon glyph="chevronDown" size={16} color="var(--ts-hint)" />
-            </span>
+            {t.explorerTitle}
           </button>
         </>
       )}

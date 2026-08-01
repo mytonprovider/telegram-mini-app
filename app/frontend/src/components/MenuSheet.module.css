@@ -62,29 +62,26 @@
 .row {
   display: flex;
   align-items: center;
-  gap: 11px;
+  justify-content: center;
   width: 100%;
   margin: 22px 0 14px;
-  padding: 13px 14px;
-  border: none;
-  border-radius: var(--ts-radius-group);
-  background: var(--ts-card2);
+  padding: 12px;
+  border: var(--ts-hairline) solid var(--ts-sep);
+  border-radius: 999px;
+  background: none;
   color: var(--ts-text);
   font-family: inherit;
   font-size: 15px;
-  text-align: left;
+  font-weight: 500;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 
-.rowLabel {
-  flex: 1;
+.row:active {
+  opacity: 0.6;
 }
 
-.chevron {
-  display: flex;
-  transform: rotate(-90deg);
-}
+
 
 .label {
   margin: 20px 0 8px;
