@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 class SendReportsWorker(BaseWorker):
     interval = 60 * 60
     delay = 60
+    align = True
 
     session: AsyncSession
     alert_repo: AlertRepo

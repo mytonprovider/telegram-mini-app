@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 class RollupHistoryWorker(BaseWorker):
     interval = 10 * 60
     delay = 5 * 60 + 30
+    align = True
 
     async def run(self) -> None:
         async with session_factory() as session:
