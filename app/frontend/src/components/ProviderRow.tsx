@@ -1,4 +1,5 @@
 import { CopyButton } from "@/components/CopyButton";
+import { StatusDot } from "@/components/StatusDot";
 import type { Provider } from "@/data/types";
 import { useT } from "@/i18n";
 import type { Dict } from "@/i18n/types";
@@ -50,12 +51,13 @@ export function ProviderRow({ provider, onOpen, trailing }: ProviderRowProps) {
       <div className={styles.head}>
         {trailing}
         <span className={styles.pk}>{shorten(provider.pubkey, 12).toUpperCase()}</span>
+        <CopyButton value={provider.pubkey} />
         <span className={styles.spacer} />
         <span className={styles.status} style={{ color: status.color }}>
           {status.label}
           {hasChecks && ` ${(status.ratio * 100).toFixed(1)}%`}
         </span>
-        <CopyButton value={provider.pubkey} />
+        <StatusDot color={status.color} size={8} />
       </div>
       <div className={styles.cells}>
         {cell(t.rating, provider.rating.toFixed(2))}
