@@ -7,10 +7,9 @@ import { setExplorer, setLanguage, setTheme } from "@/data/sync";
 import { useAppliedTheme } from "@/hooks/useTheme";
 import { useAppliedLang, useT } from "@/i18n";
 import type { Lang } from "@/i18n/types";
-import { bindBackButton, isInTelegram } from "@/lib/telegram";
+import { isInTelegram } from "@/lib/telegram";
 import { useAuth } from "@/stores/auth";
 import { type Explorer, type Theme, useSettings } from "@/stores/settings";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./MenuSheet.module.css";
 
@@ -25,8 +24,6 @@ export function MenuSheet({ onClose }: { onClose: () => void }) {
   const loggedIn = useAuth((s) => s.loggedIn);
   const user = useAuth((s) => s.user);
   const inTelegram = isInTelegram();
-
-  useEffect(() => bindBackButton(onClose), [onClose]);
 
   return (
     <BottomSheet onClose={onClose}>
