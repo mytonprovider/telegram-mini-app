@@ -58,6 +58,7 @@ app authenticates through the Telegram Login Widget.
 | `DEBUG`                 | Verbose `app.*` debug logging; keep `false` in production              | `false`                   |
 | `API_RATE_LIMIT`        | Requests per window per client IP on catalog endpoints (bag, provider) | `100`                     |
 | `API_RATE_WINDOW`       | Rate-limit window, in seconds                                          | `60`                      |
+| `AUTH_RATE_LIMIT`       | Requests per window per client IP on auth endpoints                    | `30`                      |
 | `WEBAPP_URL`            | Public app URL; base for the Telegram bot webhook                      | `https://mtp.example.com` |
 | `BOT_TOKEN`             | Bot token from @BotFather                                              | `123456:qweRTY`           |
 | `BOT_USERNAME`          | Bot username, without `@`                                              | `mytonproviderbot`        |
