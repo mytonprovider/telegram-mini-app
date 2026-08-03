@@ -35,6 +35,23 @@ The frontend is compiled into the backend's static directory, migrations run, an
 Once a day the app writes a compacted snapshot of the database to `app/backend/data/backups/` and keeps the
 last 14. The snapshot is taken while the app keeps writing, so it needs no downtime.
 
+To restore, stop the app, put a snapshot in place of `database.sqlite`, delete the `-wal` and `-shm` files
+next to it, and start again.
+
+### Health
+
+`GET /health` reports one of three states, public and not rate-limited:
+
+| Response                                        | Code  | Meaning                                        |
+|-------------------------------------------------|-------|------------------------------------------------|
+| `{"status": "ok", "stale": []}`                  | `200` | serving, every worker on schedule              |
+| `{"status": "degraded", "stale": ["…Worker"]}`   | `200` | serving, the listed workers are behind         |
+| `{"status": "down", "stale": []}`                | `503` | the database does not answer                   |
+
+`503` means the app cannot serve, so restarting it is the right response; a worker falling behind is not that
+and stays `200`. Point uptime monitors at the status code and, for the degraded case, at the `"status": "ok"`
+keyword. Docker Compose polls the same endpoint as its health check.
+
 ### Local development
 
 Backend:

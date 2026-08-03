@@ -9,6 +9,7 @@ class BaseWorker:
     interval: int
     delay: int = 0
     align: bool = False
+    last_success: float = 0.0
 
     async def run(self) -> None:
         raise NotImplementedError
@@ -28,6 +29,7 @@ class BaseWorker:
         while True:
             try:
                 await worker.run()
+                cls.last_success = time.monotonic()
                 last_error = None
             except asyncio.CancelledError:
                 raise
