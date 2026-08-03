@@ -30,6 +30,11 @@ balance and charts once ownership is verified.
 
 The frontend is compiled into the backend's static directory, migrations run, and the service starts on `:8080`.
 
+### Backups
+
+Once a day the app writes a compacted snapshot of the database to `app/backend/data/backups/` and keeps the
+last 14. The snapshot is taken while the app keeps writing, so it needs no downtime.
+
 ### Local development
 
 Backend:

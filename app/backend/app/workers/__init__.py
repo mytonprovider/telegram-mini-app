@@ -4,6 +4,7 @@ from contextlib import suppress
 
 from ._base import BaseWorker
 from .check_alerts import CheckAlertsWorker
+from .db_backup import DbBackupWorker
 from .rollup_history import RollupHistoryWorker
 from .scan_bags import ScanBagsWorker
 from .scan_wallets import ScanWalletsWorker
@@ -19,6 +20,7 @@ WORKERS: tuple[type[BaseWorker], ...] = (
     CheckAlertsWorker,
     SendReportsWorker,
     RollupHistoryWorker,
+    DbBackupWorker,
 )
 
 logger = logging.getLogger(__name__)
