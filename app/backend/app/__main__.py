@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app import api, bot, config, workers
@@ -42,6 +43,7 @@ def main() -> None:
         redoc_url=None,
         docs_url=None,
     )
+    app.add_middleware(GZipMiddleware, minimum_size=1024)
     app.include_router(api.router)
     app.mount("/", StaticFiles(directory=static_dir, html=True))
 
