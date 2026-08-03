@@ -1,4 +1,10 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, WebAppInfo
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    LinkPreviewOptions,
+    Message,
+    WebAppInfo,
+)
 
 from app import config
 from app.bot import render
@@ -23,7 +29,6 @@ async def on_start(message: Message) -> None:
         f'<b><a href="{config.WEBAPP_URL}">'
         f"{t(user.lang, 'start_title')}</a></b>\n\n"
         f"{t(user.lang, 'start_body')}"
-        f'<a href="{config.WEBAPP_URL}/banner.png">\u2060</a>'
     )
     button = InlineKeyboardButton(
         text=t(user.lang, "open_app"),
@@ -31,4 +36,11 @@ async def on_start(message: Message) -> None:
         web_app=WebAppInfo(url=config.WEBAPP_URL),
     )
     reply_markup = InlineKeyboardMarkup(inline_keyboard=[[button]])
-    await message.answer(text=text, reply_markup=reply_markup)
+    await message.answer(
+        text=text,
+        reply_markup=reply_markup,
+        link_preview_options=LinkPreviewOptions(
+            url=f"{config.WEBAPP_URL}/banner.png",
+            prefer_large_media=True,
+        ),
+    )
